@@ -38,6 +38,11 @@
             android:label="@string/activity_title_home"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name="ph.coreproc.android.angelhack.ui.activities.IntroActivity"
+            android:label="@string/activity_title_intro"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

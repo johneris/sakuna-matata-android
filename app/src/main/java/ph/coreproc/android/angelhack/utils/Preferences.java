@@ -8,22 +8,23 @@ import android.content.SharedPreferences;
  */
 public class Preferences {
 
-    private static String PACKAGE = "ph.coreproc.android.angelHack2015";
+    private static String PACKAGE = "ph.coreproc.android.angelhack";
 
     /**
      * Keys used to get and put values
      */
-    public final static String API_KEY = "API_KEY";
+    private final static String FIRST_LAUNCH = "FIRST_LAUNCH";
 
 
-    public static void setApiKey(Context context, String apiKey) {
+
+    public static void setFirstLaunch(Context context, boolean firstLaunch) {
         SharedPreferences prefs = context.getSharedPreferences(PACKAGE, Context.MODE_PRIVATE);
-        prefs.edit().putString(API_KEY, apiKey).commit();
+        prefs.edit().putBoolean(FIRST_LAUNCH, firstLaunch).commit();
     }
 
-    public static String getApiKey(Context context) {
+    public static boolean getFirstLaunch(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PACKAGE, Context.MODE_PRIVATE);
-        return prefs.getString(API_KEY, "");
+        return prefs.getBoolean(FIRST_LAUNCH, true);
     }
 
 }

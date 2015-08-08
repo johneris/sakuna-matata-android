@@ -53,6 +53,9 @@ dependencies {
     // Android Button which can morph to Circular Progress
     compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
 
+    // AppIntro - cool intro for Android app
+    compile 'com.github.paolorotolo:appintro:3.2.0'
+
     // EventBus - simplifies communication between components
     // compile 'de.greenrobot:eventbus:2.4.0'
     // Ion - Android Asynchronous Networking and Image Loading
