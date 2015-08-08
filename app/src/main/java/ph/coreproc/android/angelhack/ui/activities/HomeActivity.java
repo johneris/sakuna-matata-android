@@ -2,6 +2,7 @@ package ph.coreproc.android.angelhack.ui.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,17 +15,17 @@ import butterknife.Bind;
 import butterknife.OnClick;
 import ph.coreproc.android.angelhack.AngelHack;
 import ph.coreproc.android.angelhack.R;
-import ph.coreproc.android.angelhack.models.Location;
 import ph.coreproc.android.angelhack.ui.dialogs.ChannelDialogFragment;
 import ph.coreproc.android.angelhack.utils.SMSSender;
 import ph.coreproc.android.angelhack.utils.SingleShotLocationProvider;
 import ph.coreproc.android.angelhack.utils.UiUtil;
-import ph.coreproc.android.angelhack.utils.Util;
 
 /**
  * Created by Kaelito on 8/8/15.
  */
 public class HomeActivity extends BaseActivity {
+
+    public static final String TAG = "HomeActivity";
 
     @Bind(R.id.locationDescriptionEditText)
     EditText mLocationDescriptionEditText;
@@ -50,8 +51,15 @@ public class HomeActivity extends BaseActivity {
     @Bind(R.id.latLongTextView)
     TextView latLongTextView;
 
-    Location mLocation;
+
+
     String mChannel;
+    double mLatitude;
+    double mLongitude;
+    String mLocationString;
+    String mMessage;
+
+
 
     @Override
     protected int getLayoutResourceId() {
@@ -67,19 +75,13 @@ public class HomeActivity extends BaseActivity {
 
     private void initialize() {
         removeCurrentFocus();
-        mLocation = new Location();
-
         mCollapsingToolbar.setTitle("#TYPHOON");
-
         mChannel = "TYPHOON";
-        // getLocation();
+        getLocation();
     }
 
     private void getLocation() {
         latLongTextView.setText("Getting your location...");
-        mProvinceEditText.setEnabled(false);
-        mCityMunicipalityEditText.setEnabled(false);
-
         mSendButton.setEnabled(false);
 
         if(!SingleShotLocationProvider.isGPSEnabled(mContext) &&
@@ -91,29 +93,9 @@ public class HomeActivity extends BaseActivity {
             SingleShotLocationProvider.requestSingleUpdate(mContext, new SingleShotLocationProvider.LocationCallback() {
                 @Override
                 public void onNewLocationAvailable(SingleShotLocationProvider.GPSCoordinates location) {
+                    mLatitude = location.latitude;
+                    mLongitude = location.longitude;
                     latLongTextView.setText("Latitude: " + location.latitude + " Longitude: " + location.longitude);
-                    mLocation.latitude = location.latitude;
-                    mLocation.longitude = location.longitude;
-                    mLocation = Util.getLocation(mContext, mLocation.latitude, mLocation.longitude, "");
-
-                    if(mLocation.province.equals("")) {
-                        mProvinceEditText.setEnabled(true);
-                    } else {
-                        mProvinceEditText.setText(mLocation.province);
-                    }
-
-                    if(mLocation.city.equals(""))  {
-                        mCityMunicipalityEditText.setEnabled(true);
-                    } else {
-                        mCityMunicipalityEditText.setText(mLocation.city);
-                    }
-
-                    String message = "";
-                    if(mLocation.province.equals("") || mLocation.city.equals("")) {
-                        message = "Were having trouble getting your province and municipality.";
-                        UiUtil.showMessageDialog(getSupportFragmentManager(), message);
-                    }
-
                     mSendButton.setEnabled(true);
                 }
             });
@@ -134,12 +116,21 @@ public class HomeActivity extends BaseActivity {
         if (mSendButton.getProgress() == 0) {
             removeCurrentFocus();
 
+            mLocationString = mProvinceEditText.getText().toString() + ", " +
+                    mCityMunicipalityEditText.getText().toString() + ", " +
+                    mLocationDescriptionEditText.getText().toString();
+            mLocationString = mLocationString.trim();
+
+            mMessage = mMessageEditText.getText().toString().trim();
+
             // send
             String message = mChannel + "&|!" +
-                    "" + mLocation.latitude + "&|!" +
-                    "" + mLocation.longitude + "&|!" +
-                    "" + mLocation.description + "&|!" +
-                    "" + mMessageEditText.getText().toString().trim();
+                    "" + mLatitude + "&|!" +
+                    "" + mLongitude + "&|!" +
+                    "" + mLocationString + "&|!" +
+                    "" + mMessage;
+
+            Log.i(TAG, "message to send: " + message);
 
             mSendButton.setIndeterminateProgressMode(true);
             mSendButton.setProgress(50);

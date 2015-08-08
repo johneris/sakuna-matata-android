@@ -8,11 +8,20 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/latLongTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_large"
+        android:gravity="center_horizontal"
+        android:text="Getting your location..."
+        android:textColor="@color/accent"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginBottom="@dimen/spacing_small"
         android:layout_marginLeft="@dimen/spacing_medium"
         android:layout_marginRight="@dimen/spacing_medium"
         android:orientation="horizontal">
@@ -44,15 +53,6 @@
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/latLongTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/accent"
-        android:text="Getting your location..."
-        android:gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/spacing_small"/>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
