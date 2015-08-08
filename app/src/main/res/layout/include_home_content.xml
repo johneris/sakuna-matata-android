@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/spacing_large"
+    android:layout_marginTop="32dp"
     android:gravity="center"
     android:orientation="vertical">
 
@@ -12,7 +12,7 @@
         android:id="@+id/latLongTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_medium"
+        android:layout_marginBottom="@dimen/spacing_small"
         android:gravity="center_horizontal"
         android:text="Getting your location..."
         android:textColor="@color/accent"/>
@@ -61,10 +61,10 @@
         android:layout_marginRight="@dimen/spacing_medium">
 
         <EditText
-            android:id="@+id/locationDescriptionEditText"
+            android:id="@+id/brgyStNoEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Location Description"
+            android:hint="Barangay/Street/No."
             android:singleLine="true"/>
     </android.support.design.widget.TextInputLayout>
 

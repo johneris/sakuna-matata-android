@@ -27,8 +27,8 @@ public class HomeActivity extends BaseActivity {
 
     public static final String TAG = "HomeActivity";
 
-    @Bind(R.id.locationDescriptionEditText)
-    EditText mLocationDescriptionEditText;
+    @Bind(R.id.brgyStNoEditText)
+    EditText mBrgyStNoEditText;
 
     @Bind(R.id.messageEditText)
     EditText mMessageEditText;
@@ -116,9 +116,29 @@ public class HomeActivity extends BaseActivity {
         if (mSendButton.getProgress() == 0) {
             removeCurrentFocus();
 
+            String errorMessage = "Please fill up the following: ";
+            if(mProvinceEditText.getText().toString().trim().length() == 0) {
+                errorMessage += "\n\t*" + "Province";
+            }
+            if(mCityMunicipalityEditText.getText().toString().trim().length() == 0) {
+                errorMessage += "\n\t*" + "City/Municipality";
+            }
+            if(mBrgyStNoEditText.getText().toString().trim().length() == 0) {
+                errorMessage += "\n\t*" + "Barangay/Street/No.";
+            }
+            if(mMessageEditText.getText().toString().trim().length() == 0) {
+                errorMessage += "\n\t*" + "Message";
+            }
+
+
+            if(!errorMessage.equals("Please fill up the following: ")) {
+                UiUtil.showMessageDialog(getSupportFragmentManager(), errorMessage);
+                return;
+            }
+
             mLocationString = mProvinceEditText.getText().toString() + ", " +
                     mCityMunicipalityEditText.getText().toString() + ", " +
-                    mLocationDescriptionEditText.getText().toString();
+                    mBrgyStNoEditText.getText().toString();
             mLocationString = mLocationString.trim();
 
             mMessage = mMessageEditText.getText().toString().trim();
@@ -130,24 +150,31 @@ public class HomeActivity extends BaseActivity {
                     "" + mLocationString + "&|!" +
                     "" + mMessage;
 
-            Log.i(TAG, "message to send: " + message);
+            if(message.length() > 160) {
+                UiUtil.showMessageDialog(getSupportFragmentManager(), "The message constructed" +
+                        " containing your location and message exceeded 160 characters. " +
+                        "Please minimize the number of characters and try again.");
+            } else {
 
-            mSendButton.setIndeterminateProgressMode(true);
-            mSendButton.setProgress(50);
+                Log.i(TAG, "message to send: " + message);
 
-            SMSSender smsSender = new SMSSender(mContext) {
-                @Override
-                public void onMessageSent() {
-                    mSendButton.setProgress(100);
-                }
+                mSendButton.setIndeterminateProgressMode(true);
+                mSendButton.setProgress(50);
 
-                @Override
-                public void onMessageSendFailed(String error) {
-                    mSendButton.setProgress(-1);
-                    Toast.makeText(mContext, error, Toast.LENGTH_LONG).show();
-                }
-            };
-            smsSender.sendSMS(AngelHack.CHIKKA_SHORT_KEY, message);
+                SMSSender smsSender = new SMSSender(mContext) {
+                    @Override
+                    public void onMessageSent() {
+                        mSendButton.setProgress(100);
+                    }
+
+                    @Override
+                    public void onMessageSendFailed(String error) {
+                        mSendButton.setProgress(-1);
+                        Toast.makeText(mContext, error, Toast.LENGTH_LONG).show();
+                    }
+                };
+                smsSender.sendSMS(AngelHack.CHIKKA_SHORT_KEY, message);
+            }
 
         } else if (mSendButton.getProgress() < 0) {
             // error
