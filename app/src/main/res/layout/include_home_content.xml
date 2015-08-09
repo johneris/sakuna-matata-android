@@ -12,7 +12,7 @@
         android:id="@+id/latLongTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_small"
+        android:layout_marginBottom="@dimen/spacing_large"
         android:gravity="center_horizontal"
         android:text="Getting your location..."
         android:textColor="@color/accent"/>

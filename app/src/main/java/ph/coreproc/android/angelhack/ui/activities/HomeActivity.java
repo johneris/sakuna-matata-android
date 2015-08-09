@@ -3,22 +3,31 @@ package ph.coreproc.android.angelhack.ui.activities;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activeandroid.query.Select;
 import com.dd.CircularProgressButton;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import ph.coreproc.android.angelhack.AngelHack;
 import ph.coreproc.android.angelhack.R;
+import ph.coreproc.android.angelhack.models.Channel;
+import ph.coreproc.android.angelhack.models.Location;
 import ph.coreproc.android.angelhack.ui.dialogs.ChannelDialogFragment;
+import ph.coreproc.android.angelhack.ui.dialogs.LocationDialogFragment;
 import ph.coreproc.android.angelhack.utils.SMSSender;
 import ph.coreproc.android.angelhack.utils.SingleShotLocationProvider;
 import ph.coreproc.android.angelhack.utils.UiUtil;
+import ph.coreproc.android.angelhack.utils.Util;
 
 /**
  * Created by Kaelito on 8/8/15.
@@ -75,9 +84,46 @@ public class HomeActivity extends BaseActivity {
 
     private void initialize() {
         removeCurrentFocus();
-        mCollapsingToolbar.setTitle("#TYPHOON");
-        mChannel = "TYPHOON";
+
+        Channel channel = Util.getChannels().get(0);
+
+        mCollapsingToolbar.setTitle("#" + channel.name);
+        mChannel = channel.name;
+        mChannelImageView.setImageResource(channel.image);
+
         getLocation();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.action_location) {
+            List<Location> locationList = new Select().from(Location.class).execute();
+            if(locationList.isEmpty()) {
+                Toast.makeText(mContext, "No previous locations", Toast.LENGTH_SHORT).show();
+            } else {
+                LocationDialogFragment locationDialogFragment = new LocationDialogFragment() {
+                    @Override
+                    public void onLocationSelected(Location location) {
+                        mProvinceEditText.setText(location.province);
+                        mCityMunicipalityEditText.setText(location.cityMunicipality);
+                        mBrgyStNoEditText.setText(location.barangayStreetNo);
+                        mMessageEditText.requestFocus();
+                    }
+                };
+                locationDialogFragment.show(getSupportFragmentManager(), "LocationDialogFragment");
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void getLocation() {
@@ -155,7 +201,6 @@ public class HomeActivity extends BaseActivity {
                         " containing your location and message exceeded 160 characters. " +
                         "Please minimize the number of characters and try again.");
             } else {
-
                 Log.i(TAG, "message to send: " + message);
 
                 mSendButton.setIndeterminateProgressMode(true);
@@ -174,6 +219,21 @@ public class HomeActivity extends BaseActivity {
                     }
                 };
                 smsSender.sendSMS(AngelHack.CHIKKA_SHORT_KEY, message);
+
+                Location location = new Select().from(Location.class)
+                        .where("province = ?", mProvinceEditText.getText().toString().trim())
+                        .where("city_municipality = ?", mCityMunicipalityEditText.getText().toString().trim())
+                        .where("barangay_street_no = ?", mBrgyStNoEditText.getText().toString().trim())
+                        .executeSingle();
+
+                if(location == null) {
+                    location = new Location();
+                    location.province = mProvinceEditText.getText().toString().trim();
+                    location.cityMunicipality = mCityMunicipalityEditText.getText().toString().trim();
+                    location.barangayStreetNo = mBrgyStNoEditText.getText().toString().trim();
+                    location.save();
+                }
+
             }
 
         } else if (mSendButton.getProgress() < 0) {
@@ -191,9 +251,10 @@ public class HomeActivity extends BaseActivity {
     public void changeChannel() {
         ChannelDialogFragment channelDialogFragment = new ChannelDialogFragment() {
             @Override
-            public void onChannelChanged(String channel) {
-                mChannel = channel;
+            public void onChannelChanged(Channel channel) {
+                mChannel = channel.name;
                 mCollapsingToolbar.setTitle("#" + mChannel);
+                mChannelImageView.setImageResource(channel.image);
             }
         };
         channelDialogFragment.show(getSupportFragmentManager(), "ChannelDialogFragment");

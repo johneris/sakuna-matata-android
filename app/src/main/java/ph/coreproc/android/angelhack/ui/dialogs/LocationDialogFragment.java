@@ -8,10 +8,13 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.widget.ArrayAdapter;
 
-import ph.coreproc.android.angelhack.models.Channel;
-import ph.coreproc.android.angelhack.utils.Util;
+import com.activeandroid.query.Select;
 
-public abstract class ChannelDialogFragment extends DialogFragment {
+import java.util.List;
+
+import ph.coreproc.android.angelhack.models.Location;
+
+public abstract class LocationDialogFragment extends DialogFragment {
 
     private Context mContext;
 
@@ -22,25 +25,29 @@ public abstract class ChannelDialogFragment extends DialogFragment {
     }
 
 
-    private Channel newChannel;
+    private Location newLocation;
+    private List<Location> mLocationList;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Channels");
-        final ArrayAdapter<String> channelArrayAdapter = getChannelArrayAdapter();
+        builder.setTitle("Previous Locations");
 
-        builder.setSingleChoiceItems(channelArrayAdapter, 0,
+        mLocationList = new Select().from(Location.class).execute();
+        final ArrayAdapter<String> locationArrayAdapter = getChannelArrayAdapter();
+
+        newLocation = mLocationList.get(0);
+        builder.setSingleChoiceItems(locationArrayAdapter, 0,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        newChannel = Util.getChannels().get(which);
+                        newLocation = mLocationList.get(which);
                     }
                 });
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                onChannelChanged(newChannel);
+                onLocationSelected(newLocation);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -53,17 +60,18 @@ public abstract class ChannelDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    public abstract void onChannelChanged(Channel channel);
+    public abstract void onLocationSelected(Location location);
 
     private ArrayAdapter<String> getChannelArrayAdapter() {
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 mContext,
                 android.R.layout.select_dialog_singlechoice);
-        for (Channel channel : Util.getChannels()) {
-            arrayAdapter.add(channel.name);
+
+        for(Location location : mLocationList) {
+            arrayAdapter.add(location.toString());
         }
+
         return arrayAdapter;
     }
-
 
 }
