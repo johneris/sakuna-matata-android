@@ -13,10 +13,10 @@ public class Util {
 
     public static List<Channel> getChannels() {
         List<Channel> channelList = new ArrayList<>();
-        channelList.add(new Channel("typhoon", R.drawable.ic_launcher));
-        channelList.add(new Channel("storm_surge", R.drawable.ic_launcher));
-        channelList.add(new Channel("earthquake", R.drawable.ic_launcher));
-        channelList.add(new Channel("volcanic_eruption", R.drawable.ic_launcher));
+        channelList.add(new Channel("typhoon", R.drawable.typhoon));
+        channelList.add(new Channel("storm_surge", R.drawable.storm_surge));
+        channelList.add(new Channel("earthquake", R.drawable.earthquake));
+        channelList.add(new Channel("volcanic_eruption", R.drawable.volcanic_eruption));
         return channelList;
     }
 
